@@ -66,7 +66,23 @@ def quick_sort(arr, compare_func=None):
 
     return quick_sort(smaller, compare_func) + equal + quick_sort(larger, compare_func)
 
+def linear_regression(x, y):
+    n = len(x)
+    sum_x = sum(x)
+    sum_y = sum(y)
+    sum_xy = sum(x[i] * y[i] for i in range(n))
+    sum_x_squared = sum(x[i] ** 2 for i in range(n))
 
+    # 判断斜率是否为无穷
+    if min(x) == max(x):
+        slope = float('inf')
+        intercept = float('inf')
+    else:
+        # 计算回归系数
+        slope = (n * sum_xy - sum_x * sum_y) / (n * sum_x_squared - sum_x ** 2)
+        intercept = (sum_y - slope * sum_x) / n
+
+    return slope, intercept
 
 
 sensor.reset()
@@ -143,9 +159,15 @@ while True:
                             minrec = k
                     points_class[minrec].append([i,j])
 
-
-
-
-
-
+        for i in range(4):
+            if not points_class[i]:
+                continue
+            x = [points_class[i][j][0] for j in range(len(points_class[i]))]
+            y = [points_class[i][j][1] for j in range(len(points_class[i]))]
+            k, b = linear_regression(x,y)
+            px0 = 0
+            px1 = 320
+            py0 = k*px0+b
+            py1 = k*px1+b
+            img.draw_line(int(px0),int(py0),int(px1),int(py1),color=128)
     print(clock.fps())
